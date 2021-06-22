@@ -49,6 +49,7 @@ export default {
   },
 
   mounted() {
+
     this.styleCard = {
       width: this.height * 0.75 + 'px',
       height: this.height + 'px',  
@@ -67,7 +68,7 @@ export default {
   methods: {
     toggleCard() {
        if (this.isFlipped || this.rules.length === 2) return
-          this.isFlipped = true;
+          this.isFlipped = !this.isFlipped;
        this.$emit('onFlip', this.card);
     },
 

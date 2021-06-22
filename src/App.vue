@@ -5,14 +5,15 @@
         @level-select = "handleBeforeStart"
         v-if = "matchStatus === 'default'"
         :matchLevels = "matchLevels"
+
       > Level {{rows}} x {{rows}}
       </MainScreen>
 
       <Interact
-          v-if = "matchStatus === 'play'"
+          v-else 
           :config = "setting.config"
           :cardsContext = "cardsContext"
-          @play-cancel = "matchStatus = 'default'"
+          @play-cancel = "playCanceled"
       ></Interact>
 
     </div>
@@ -27,6 +28,7 @@ import MatchLevels from '@/config/app.js'
 import {array_shuff, array_range, array_random } from '@/utilities/array_func.js'
 
 export default {
+
   name: 'App',
   data(){
     return {
@@ -41,7 +43,9 @@ export default {
   },
 
   methods:{
-    setCardsContext(cards) {
+    
+    setCardsContext(cards) {  
+
       cards.forEach((card, index) => {
         this.cardsContext.push({
           value : card,
@@ -50,17 +54,26 @@ export default {
         })
       }) 
     },
+
+    playCanceled() {
+       this.cardsContext = [];
+       this.matchStatus = 'default'
+
+    }, 
    
     handleBeforeStart(config) {
-   
+
       this.setting.config = { ... config }
+ 
 
       /* random card number  */
       let cards = array_random( array_range(1, 64), config.totalOfBlocks / 2) ;
 
       /* duplicatio a card and mixer position*/
       cards = array_shuff([...cards, ...cards]);
+      console.log(cards);
       this.setCardsContext(cards);
+
       this.matchStatus = 'play';
 
     }, 

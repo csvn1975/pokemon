@@ -26,7 +26,7 @@
     
     <div class="card-wrapper" :style = "styleCardWrapper" >
       <card class="card"
-        v-for="card in cardsContext"
+        v-for="card in cards"
         :key="card.index"
         :ref="'card-' + card.index"
         :card="card"
@@ -50,9 +50,11 @@ export default {
     return {
       rules: [],
       duration: -1,
-      intervalId:0,
+      intervalId:-1,
+      timeOutInterval:-1,
       flippedCount:0,
       isBreaked: false,
+      cards: [],
     };
 
   },
@@ -71,13 +73,14 @@ export default {
 
   created() {
     this.height = this.config.rows > 4 ? 80 : 100;
+    this.cards = this.cardsContext;
   },
 
   computed: {
+
     isPlayed () {
         if (this.cardsContext.length === this.flippedCount) {
-
-            clearInterval(this.intervalId);
+            this.resetValue()
            return true
         } 
          else return false
@@ -107,33 +110,32 @@ export default {
   },
 
   methods: {
-    playCancel() {
-       this.$emit('PlayCancel')
+    playCancel() {  
+        this.$emit('PlayCancel')
     }, 
 
     playBreak(){
-        clearInterval(this.intervalId);
+        this.resetValue()
         this.isBreaked = true;
     },
 
     playNew(){
-
-        this.isBreaked = false;
-        this.duration = -1;
-        clearInterval(this.intervalId);
-        this.flippedCount = 0;
-        this.rules = [];
-        const cardLength = this.cardsContext.length
+      const cardLength = this.cardsContext.length
         for(let i=0 ; i < cardLength; i++) 
           this.$refs[`card-${i}`].onFlipBackCard();
+       this.resetValue();
     },
+
+    resetValue(){
+        clearInterval(this.intervalId);
+        this.rules = [];
+      },
 
     timerStart() {
           if (this.isBreaked)
              this.isBreaked = false
           else
             this.duration = 0;
-
           this.intervalId = setInterval (() => {
                 this.duration++
           }, 10) 
@@ -146,25 +148,31 @@ export default {
          this.timerStart()
       }
      
+      if (this.rules.length < 2) {
+         this.rules.push(card);
+      } 
+      
       if (this.rules.length == 2) {
-        return;
-      } else this.rules.push(card);
-
-      if (this.rules.length == 2) {
-        if (this.rules[0].value === this.rules[1].value) {
-          this.rules = [];
-          this.flippedCount +=2;
-
-        } else {
-          setTimeout(() => {
-            this.$refs[`card-${this.rules[0].index}`].onFlipBackCard();
-            this.$refs[`card-${this.rules[1].index}`].onFlipBackCard();
+          if (this.rules[0].value === this.rules[1].value) {
             this.rules = [];
-          }, 800);
-        }
+            this.flippedCount +=2;
+          } 
+          else {
+              setTimeout(() => {
+              this.$refs[`card-${this.rules[0].index}`].onFlipBackCard();
+              this.$refs[`card-${this.rules[1].index}`].onFlipBackCard();
+              this.rules = [];
+            }, 800);
+          }
       }
+     
     },
   },
+
+  beforeUnmount() {
+    this.resetValue()
+  },
+
 };
 </script>
 
