@@ -3,7 +3,7 @@
     
     <div class="heading">
       <h1>POKEMON MEMMORIES</h1>
-      <h3>PLAY</h3>
+      <h3> {{ isPlayed ? 'YOU WIN' : 'PLAY' }}  </h3>
       <span>Time: </span><span> {{ displayduration }}</span>
     </div>
 
@@ -76,13 +76,15 @@ export default {
   computed: {
     isPlayed () {
         if (this.cardsContext.length === this.flippedCount) {
-           clearInterval(this.intervalId);
+
+            clearInterval(this.intervalId);
            return true
         } 
          else return false
     }, 
 
     displayduration(){
+
       if (this.duration === -1 )
          return '';
         
@@ -115,6 +117,7 @@ export default {
     },
 
     playNew(){
+
         this.isBreaked = false;
         this.duration = -1;
         clearInterval(this.intervalId);
@@ -127,7 +130,7 @@ export default {
 
     timerStart() {
           if (this.isBreaked)
-            this.isBreaked = false
+             this.isBreaked = false
           else
             this.duration = 0;
 
